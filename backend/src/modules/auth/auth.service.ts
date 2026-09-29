@@ -1,0 +1,30 @@
+import { AppError } from "../../utils/AppError.js";
+import { hashPassword } from "../../utils/auth.helper.js";
+import { IAuthRepository } from "./auth.interface.js";
+import { toAuthResponse } from "./auth.mapper.js";
+import { registerUserDTO } from "./auth.schema.js";
+
+export class AuthService {
+  constructor(private userRepo: IAuthRepository) {}
+
+  async registerUser(data: registerUserDTO) {
+    const { firstName, lastName, email, password, role, phoneNumber } = data;
+
+    const existingUser = await this.userRepo.getUserByEmail(email);
+
+    if (existingUser) {
+      throw new AppError("User with this email already registered", 400);
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    const newUser = await this.userRepo.createUser({
+      ...data,
+      password: hashedPassword,
+      lastName: lastName ?? null,
+      role: role ?? "USER",
+    });
+
+    return { user: toAuthResponse(newUser) };
+  }
+}

@@ -3,6 +3,6 @@ import { PORT } from "./config/env.config.js";
 
 const port = PORT;
 
-app.listen("/health-check", () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port: ${port}`);
 });
