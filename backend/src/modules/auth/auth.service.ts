@@ -1,7 +1,11 @@
 import { AppError } from "../../utils/AppError.js";
-import { hashPassword } from "../../utils/auth.helper.js";
+import { hashPassword, hashRefreshToken } from "../../utils/auth.helper.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../../utils/jwt.helper.js";
 import { IAuthRepository } from "./auth.interface.js";
-import { toAuthResponse } from "./auth.mapper.js";
+import { toAuthResponse, toJwtPayload } from "./auth.mapper.js";
 import { registerUserDTO } from "./auth.schema.js";
 
 export class AuthService {
@@ -25,6 +29,23 @@ export class AuthService {
       role: role ?? "USER",
     });
 
-    return { user: toAuthResponse(newUser) };
+    const jwtPayload = toJwtPayload(newUser);
+
+    const accessToken = generateAccessToken(jwtPayload);
+    const refreshToken = generateRefreshToken(jwtPayload);
+
+    const hashedRefreshToken = hashRefreshToken(refreshToken);
+
+    await this.userRepo.createRefreshToken({
+      token: hashedRefreshToken as string,
+      userId: newUser.id as string,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+
+    return {
+      user: toAuthResponse(newUser),
+      accessToken,
+      refreshToken,
+    };
   }
 }

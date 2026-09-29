@@ -1,4 +1,5 @@
 import { User } from "../../generated/prisma/client.js";
+import { IJwtPayload } from "../../types/index.js";
 import { authResponseDTO } from "./auth.response.js";
 
 export const toAuthResponse = (user: User): authResponseDTO => ({
@@ -11,3 +12,13 @@ export const toAuthResponse = (user: User): authResponseDTO => ({
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
+
+export const toJwtPayload = (user: User): IJwtPayload => {
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+};
