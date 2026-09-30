@@ -17,4 +17,12 @@ export const registerUseSchema = z
   })
   .strict();
 
+export const loginUserSchema = z
+  .object({
+    email: z.string(),
+    password: z.string(),
+  })
+  .strict();
+
 export type registerUserDTO = z.infer<typeof registerUseSchema>;
+export type loginUserDTO = z.infer<typeof loginUserSchema>;

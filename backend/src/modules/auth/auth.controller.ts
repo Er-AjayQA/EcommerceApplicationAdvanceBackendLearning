@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CatchAsync } from "../../utils/CatchAsync.js";
 import { authService } from "./auth.container.js";
 import { sendResponse } from "../../utils/sendResponse.js";
@@ -13,6 +13,20 @@ export const registerUserController = CatchAsync(
     sendResponse(res, 201, {
       success: true,
       message: "Account created successfully",
+      data: result,
+    });
+  },
+);
+
+export const loginController = CatchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await authService.loginUser(req.body);
+
+    setCookies(res, result.accessToken, result.refreshToken);
+
+    sendResponse(res, 201, {
+      success: true,
+      message: "LoggedIn successfully",
       data: result,
     });
   },
