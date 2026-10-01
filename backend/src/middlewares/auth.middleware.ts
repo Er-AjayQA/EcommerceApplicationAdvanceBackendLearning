@@ -34,3 +34,17 @@ export const verifyUser = async (
     next(new AppError("Invalid or expired token", 401));
   }
 };
+
+export const verifySeller = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const user = req.user;
+
+  if (user.role !== "SELLER") {
+    throw new AppError("You are unauthorized", 401);
+  }
+
+  next();
+};

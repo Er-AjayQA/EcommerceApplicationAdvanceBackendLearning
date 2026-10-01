@@ -18,4 +18,8 @@ export interface IAuthRepository {
     userId: string;
     expiresAt: Date;
   }): Promise<RefreshToken>;
+
+  findRefreshToken(hashedRefreshToken: string): Promise<RefreshToken | null>;
+  deleteRefreshTokenById(refreshTokenId: string): Promise<boolean>;
+  deleteAllRefreshTokenByUser(userId: string): Promise<boolean>;
 }

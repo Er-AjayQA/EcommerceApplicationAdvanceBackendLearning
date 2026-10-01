@@ -34,4 +34,22 @@ export class AuthRepository implements IAuthRepository {
     const token = await prisma.refreshToken.create({ data });
     return token;
   }
+
+  async findRefreshToken(hashedRefreshToken: string) {
+    const refreshToken = await prisma.refreshToken.findUnique({
+      where: { token: hashedRefreshToken },
+    });
+
+    return refreshToken;
+  }
+
+  async deleteRefreshTokenById(refreshTokenId: string) {
+    await prisma.refreshToken.delete({ where: { id: refreshTokenId } });
+    return true;
+  }
+
+  async deleteAllRefreshTokenByUser(userId: string) {
+    await prisma.refreshToken.deleteMany({ where: { userId } });
+    return true;
+  }
 }
