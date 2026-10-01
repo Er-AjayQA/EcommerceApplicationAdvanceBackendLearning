@@ -24,7 +24,11 @@ app.get("/api/v1/health-check", (req: Request, res: Response) => {
 
 // Routes
 import authRouter from "./modules/auth/auth.route.js";
+import categoryRouter from "./modules/category/category.route.js";
+import productRouter from "./modules/product/product.route.js";
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/product", productRouter);
 
 app.use(globalErrorHandler);

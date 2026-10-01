@@ -368,7 +368,7 @@ export type ProductCreateInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -387,7 +387,7 @@ export type ProductUncheckedCreateInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -438,7 +438,7 @@ export type ProductCreateManyInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -698,7 +698,7 @@ export type ProductCreateWithoutUserInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -715,7 +715,7 @@ export type ProductUncheckedCreateWithoutUserInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -774,7 +774,7 @@ export type ProductCreateWithoutCategoryInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -791,7 +791,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -832,7 +832,7 @@ export type ProductCreateWithoutOrderItemsInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -850,7 +850,7 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -912,7 +912,7 @@ export type ProductCreateWithoutCartItemsInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -930,7 +930,7 @@ export type ProductUncheckedCreateWithoutCartItemsInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -993,7 +993,7 @@ export type ProductCreateManyUserInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1053,7 +1053,7 @@ export type ProductCreateManyCategoryInput = {
   productImagesUrls?: Prisma.ProductCreateproductImagesUrlsInput | string[]
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   stock: number
-  rating: number
+  rating?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string

@@ -135,6 +135,9 @@ CREATE INDEX "User_email_idx" ON "User"("email");
 CREATE INDEX "Address_userId_idx" ON "Address"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Category_categoryName_key" ON "Category"("categoryName");
+
+-- CreateIndex
 CREATE INDEX "Product_categoryId_idx" ON "Product"("categoryId");
 
 -- CreateIndex

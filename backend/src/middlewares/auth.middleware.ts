@@ -48,3 +48,17 @@ export const verifySeller = async (
 
   next();
 };
+
+export const verifyAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const user = req.user;
+
+  if (user.role !== "ADMIN") {
+    throw new AppError("You are unauthorized", 401);
+  }
+
+  next();
+};
