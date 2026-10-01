@@ -8,4 +8,6 @@ export interface ICategoryRepository {
 
   findCategoryById(categoryId: string): Promise<Category | null>;
   findCategoryByName(categoryName: string): Promise<Category | null>;
+
+  deleteCategory(categoryId: string): Promise<boolean>;
 }

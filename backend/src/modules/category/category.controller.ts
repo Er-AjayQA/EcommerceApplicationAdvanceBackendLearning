@@ -27,3 +27,15 @@ export const getCategoryByIdController = CatchAsync(
     });
   },
 );
+
+export const deleteCategoryController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const categoryId = req.params.id as string;
+    const isDeleted = await categoryService.deleteCategory(categoryId);
+
+    sendResponse(res, 201, {
+      success: true,
+      message: "Category deleted successfully",
+    });
+  },
+);

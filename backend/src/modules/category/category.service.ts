@@ -28,4 +28,15 @@ export class CategoryService {
 
     return toCategoryResponse(category);
   }
+
+  async deleteCategory(categoryId: string) {
+    const isExisting = await this.categoryRepo.findCategoryById(categoryId);
+
+    if (!isExisting) {
+      throw new AppError("Categpry not found", 404);
+    }
+
+    await this.categoryRepo.deleteCategory(categoryId);
+    return true;
+  }
 }

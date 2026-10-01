@@ -24,4 +24,9 @@ export class CategoryRepository implements ICategoryRepository {
     });
     return category;
   }
+
+  async deleteCategory(categoryId: string) {
+    await prisma.category.delete({ where: { id: categoryId } });
+    return true;
+  }
 }
