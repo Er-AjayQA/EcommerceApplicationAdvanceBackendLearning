@@ -5,7 +5,7 @@ export const toProductResponse = (product: Product) => {
     id: product.id,
     userId: product.userId,
     categoryId: product.categoryId,
-    productName: product.productDescription,
+    productName: product.productName,
     productDescription: product.productDescription,
     productImagesUrls: product.productImagesUrls,
     price: product.price,

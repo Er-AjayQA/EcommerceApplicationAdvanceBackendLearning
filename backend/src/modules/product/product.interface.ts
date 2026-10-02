@@ -1,4 +1,4 @@
-import { Product } from "../../generated/prisma/client.js";
+import { Prisma, Product } from "../../generated/prisma/client.js";
 
 export interface IProductRepository {
   createProduct(data: {
@@ -11,6 +11,27 @@ export interface IProductRepository {
     stock: number;
   }): Promise<Product>;
 
+  updateProduct(
+    productId: string,
+    sellerId: string,
+    data: Prisma.ProductUncheckedUpdateInput,
+  ): Promise<Product>;
+
   deleteProductsByCategory(categoryId: string): Promise<boolean>;
+  deleteProductById(productId: string, sellerId: string): Promise<boolean>;
+
+  toggleProductStatus(
+    productId: string,
+    sellerId: string,
+    status: boolean,
+  ): Promise<Product>;
+
+  findAllProducts(): Promise<Product[] | []>;
+  findProductById(productId: string): Promise<Product | null>;
   findProductsByCategoryId(categoryId: string): Promise<Product[] | []>;
+  findProductByIdAndSellerId(
+    productId: string,
+    sellerId: string,
+  ): Promise<Product | null>;
+  findAllActiveProducts(): Promise<Product[] | []>;
 }
