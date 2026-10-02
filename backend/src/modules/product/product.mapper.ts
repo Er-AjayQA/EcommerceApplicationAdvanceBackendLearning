@@ -16,3 +16,7 @@ export const toProductResponse = (product: Product) => {
     updatedAt: product.updatedAt,
   };
 };
+
+export const toProductsListResponse = (products: Product[]) => {
+  return products.map(toProductResponse);
+};
