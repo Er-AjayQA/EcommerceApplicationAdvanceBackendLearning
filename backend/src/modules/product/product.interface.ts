@@ -10,4 +10,7 @@ export interface IProductRepository {
     price: any;
     stock: number;
   }): Promise<Product>;
+
+  deleteProductsByCategory(categoryId: string): Promise<boolean>;
+  findProductsByCategoryId(categoryId: string): Promise<Product[] | []>;
 }

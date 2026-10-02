@@ -1,10 +1,17 @@
 import { AppError } from "../../utils/AppError.js";
+import { IProductRepository } from "../product/product.interface.js";
 import { ICategoryRepository } from "./category.interface.js";
-import { toCategoryResponse } from "./category.mapper.js";
-import { createCategoryDTO } from "./category.schema.js";
+import {
+  toCategoriesListResponse,
+  toCategoryResponse,
+} from "./category.mapper.js";
+import { createCategoryDTO, updateCategoryDTO } from "./category.schema.js";
 
 export class CategoryService {
-  constructor(private categoryRepo: ICategoryRepository) {}
+  constructor(
+    private categoryRepo: ICategoryRepository,
+    private productRepo: IProductRepository,
+  ) {}
 
   async createCategory(data: createCategoryDTO) {
     const existingName = await this.categoryRepo.findCategoryByName(
@@ -17,6 +24,31 @@ export class CategoryService {
 
     const newCategory = await this.categoryRepo.createCategory(data);
     return toCategoryResponse(newCategory);
+  }
+
+  async updateCategory(categoryId: string, data: updateCategoryDTO) {
+    const isCategoryExist =
+      await this.categoryRepo.findCategoryById(categoryId);
+
+    if (!isCategoryExist) {
+      throw new AppError("Category not exist", 404);
+    }
+
+    if (data?.categoryName) {
+      const duplicate = await this.categoryRepo.findCategoryByName(
+        data.categoryName,
+      );
+
+      if (duplicate && duplicate.id !== categoryId) {
+        throw new AppError("Category with this name already exist", 400);
+      }
+    }
+
+    const updatedCategory = await this.categoryRepo.updateCategory(
+      categoryId,
+      data,
+    );
+    return toCategoryResponse(updatedCategory);
   }
 
   async getCategoryById(categoryId: string) {
@@ -33,10 +65,25 @@ export class CategoryService {
     const isExisting = await this.categoryRepo.findCategoryById(categoryId);
 
     if (!isExisting) {
-      throw new AppError("Categpry not found", 404);
+      throw new AppError("Category not found", 404);
+    }
+
+    const categoryProducts =
+      await this.productRepo.findProductsByCategoryId(categoryId);
+
+    if (categoryProducts.length > 0) {
+      throw new AppError(
+        "Can't delete category, Products associated to this category.",
+        400,
+      );
     }
 
     await this.categoryRepo.deleteCategory(categoryId);
     return true;
+  }
+
+  async getAllCategories() {
+    const categories = await this.categoryRepo.findAllCategories();
+    return toCategoriesListResponse(categories);
   }
 }

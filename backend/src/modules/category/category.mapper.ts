@@ -10,3 +10,15 @@ export const toCategoryResponse = (category: Category): categoryResponseDTO => {
     updatedAt: category.updatedAt,
   };
 };
+
+export const toCategoriesListResponse = (
+  categories: Category[],
+): categoryResponseDTO[] => {
+  return categories.map((category: Category) => ({
+    id: category.id,
+    categoryName: category.categoryName,
+    categoryDescription: category.categoryDescription,
+    createdAt: category.createdAt,
+    updatedAt: category.updatedAt,
+  }));
+};
