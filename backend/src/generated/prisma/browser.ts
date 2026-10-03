@@ -48,6 +48,11 @@ export type Product = Prisma.ProductModel
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model OrderAddress
+ * 
+ */
+export type OrderAddress = Prisma.OrderAddressModel
+/**
  * Model OrderItems
  * 
  */

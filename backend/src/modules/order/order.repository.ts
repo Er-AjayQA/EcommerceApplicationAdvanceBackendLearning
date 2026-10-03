@@ -6,7 +6,7 @@ export class OrderRepository implements IOrderRepository {
   async getOrderById(orderId: any) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: true } }, orderAddress: true },
     });
     return order;
   }
@@ -14,7 +14,7 @@ export class OrderRepository implements IOrderRepository {
   async getOrdersByUserId(userId: string) {
     const orders = await prisma.order.findMany({
       where: { userId },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: true } }, orderAddress: true },
     });
     return orders;
   }
@@ -22,7 +22,7 @@ export class OrderRepository implements IOrderRepository {
   async updateOrderStatus(orderId: string, status: OrderStatus) {
     const order = await prisma.order.update({
       where: { id: orderId },
-      include: { items: true },
+      include: { items: { include: { product: true } }, orderAddress: true },
       data: { status },
     });
 

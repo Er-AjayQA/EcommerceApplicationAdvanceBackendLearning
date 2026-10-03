@@ -1,6 +1,7 @@
 import { OrderStatus, Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
+import { IAddressRepository } from "../address/address.interface.js";
 import { IProductRepository } from "../product/product.interface.js";
 import { IOrderRepository } from "./order.interface.js";
 import { createOrderDTO, updateOrderStatusDTO } from "./order.schema.js";
@@ -9,6 +10,7 @@ export class OrderService {
   constructor(
     private orderRepo: IOrderRepository,
     private productRepo: IProductRepository,
+    private addressRepo: IAddressRepository,
   ) {}
 
   async createOrder(userId: string, data: createOrderDTO) {
@@ -19,6 +21,14 @@ export class OrderService {
     }
 
     return await prisma.$transaction(async (tx) => {
+      const existingAddress = await this.addressRepo.findAddressById(
+        data.addressId,
+      );
+
+      if (!existingAddress || existingAddress.userId !== userId) {
+        throw new AppError("Invalid address", 404);
+      }
+
       let totalPrice = new Prisma.Decimal(0);
       let totalItems = 0;
       const orderItemsData = [];
@@ -66,8 +76,18 @@ export class OrderService {
           items: {
             create: orderItemsData,
           },
+          orderAddress: {
+            create: {
+              addressLine1: existingAddress.addressLine1,
+              addressLine2: existingAddress.addressLine2,
+              city: existingAddress.city,
+              state: existingAddress.state,
+              pincode: existingAddress.pincode,
+              country: existingAddress.country,
+            },
+          },
         },
-        include: { items: true },
+        include: { items: { include: { product: true } }, orderAddress: true },
       });
 
       return order;
@@ -150,6 +170,7 @@ export class OrderService {
       const cancelledOrder = await tx.order.update({
         where: { id: orderId },
         data: { status: OrderStatus.CANCELLED },
+        include: { items: { include: { product: true } }, orderAddress: true },
       });
 
       return cancelledOrder;

@@ -8,6 +8,7 @@ export const createOrderSchema = z
         quantity: z.number().min(1, "Product quantity can't be less than 1"),
       }),
     ),
+    addressId: z.string(),
   })
   .strict();
 
