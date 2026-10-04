@@ -46,7 +46,7 @@ router
   .route("/toggle-status/:id")
   .patch(verifyUser, verifySeller, toggleProductStatusController);
 
-router.route("/all").get(verifyUser, getAllProductsController);
+router.route("/all").get(verifyUser, verifySeller, getAllProductsController);
 router.route("/category/:catId").get(getProductsByCategoryController);
 router.route("/active").get(getAllActiveProductsController);
 

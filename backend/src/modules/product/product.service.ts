@@ -1,6 +1,8 @@
 import { Prisma } from "../../generated/prisma/client.js";
+import redis from "../../lib/redis.js";
 import { ProductQueryOptions } from "../../types/index.js";
 import { AppError } from "../../utils/AppError.js";
+import { invalidateProductCache } from "../../utils/cache.helper.js";
 import {
   deleteFromCloudinary,
   uploadToCloudinary,
@@ -47,6 +49,7 @@ export class ProductService {
       stock: Number(data.stock),
     });
 
+    await invalidateProductCache();
     return toProductResponse(newProduct);
   }
 
@@ -132,6 +135,8 @@ export class ProductService {
       sellerId,
       updateData,
     );
+
+    await invalidateProductCache();
     return toProductResponse(updatedProduct);
   }
 
@@ -155,6 +160,7 @@ export class ProductService {
     );
 
     await this.productRepo.deleteProductById(productId, sellerId);
+    await invalidateProductCache();
   }
 
   async toggleProductStatus(productId: string, sellerId: string) {
@@ -176,14 +182,28 @@ export class ProductService {
       !isExistingProduct.isActive,
     );
 
+    await invalidateProductCache();
     return toProductResponse(updatedProduct);
   }
 
   async getAllProducts(filters: ProductQueryOptions) {
+    const cacheKey = `products:${JSON.stringify(filters)}`;
+    const cachedProducts = await redis.get(cacheKey);
+
+    if (cachedProducts) {
+      return JSON.parse(cachedProducts);
+    }
+
     const { products, nextCursor, hasMore } =
       await this.productRepo.findAllProducts(filters);
+    const formattedData = {
+      products: toProductsListResponse(products),
+      nextCursor,
+      hasMore,
+    };
 
-    return { products: toProductsListResponse(products), nextCursor, hasMore };
+    await redis.set(cacheKey, JSON.stringify(formattedData), "EX", 300);
+    return formattedData;
   }
 
   async getProductsByCategoryId(categoryId: string) {
@@ -193,9 +213,24 @@ export class ProductService {
   }
 
   async getAllActiveProducts(filters: ProductQueryOptions) {
+    const cacheKey = `products:${JSON.stringify(filters)}`;
+    const cachedProducts = await redis.get(cacheKey);
+
+    if (cachedProducts) {
+      return JSON.parse(cachedProducts);
+    }
+
     const { products, nextCursor, hasMore } =
       await this.productRepo.findAllActiveProducts(filters);
 
-    return { products: toProductsListResponse(products), nextCursor, hasMore };
+    const formattedData = {
+      products: toProductsListResponse(products),
+      nextCursor,
+      hasMore,
+    };
+
+    await redis.set(cacheKey, JSON.stringify(formattedData), "EX", 300);
+
+    return formattedData;
   }
 }
