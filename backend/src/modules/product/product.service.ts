@@ -1,4 +1,5 @@
 import { Prisma } from "../../generated/prisma/client.js";
+import { ProductQueryOptions } from "../../types/index.js";
 import { AppError } from "../../utils/AppError.js";
 import {
   deleteFromCloudinary,
@@ -178,8 +179,8 @@ export class ProductService {
     return toProductResponse(updatedProduct);
   }
 
-  async getAllProducts() {
-    const products = await this.productRepo.findAllProducts();
+  async getAllProducts(filters: ProductQueryOptions) {
+    const products = await this.productRepo.findAllProducts(filters);
     return toProductsListResponse(products);
   }
 
@@ -189,8 +190,9 @@ export class ProductService {
     return toProductsListResponse(products);
   }
 
-  async getAllActiveProducts() {
-    const activeProducts = await this.productRepo.findAllActiveProducts();
+  async getAllActiveProducts(filters: ProductQueryOptions) {
+    const activeProducts =
+      await this.productRepo.findAllActiveProducts(filters);
     return toProductsListResponse(activeProducts);
   }
 }

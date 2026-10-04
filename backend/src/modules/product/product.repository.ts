@@ -1,6 +1,12 @@
+import { gte } from "zod";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
+import { ProductQueryOptions } from "../../types/index.js";
 import { IProductRepository } from "./product.interface.js";
+import {
+  generateProductSortingCondition,
+  generateProductWhereCondition,
+} from "./product.helper.js";
 
 export class ProductRepository implements IProductRepository {
   async createProduct(data: {
@@ -53,8 +59,16 @@ export class ProductRepository implements IProductRepository {
     return product;
   }
 
-  async findAllProducts() {
-    const products = await prisma.product.findMany();
+  async findAllProducts(filters: ProductQueryOptions) {
+    const { sortBy } = filters;
+
+    const whereCondition = generateProductWhereCondition(filters);
+    const sortingCondition = generateProductSortingCondition(sortBy as string);
+
+    const products = await prisma.product.findMany({
+      where: whereCondition,
+      orderBy: sortingCondition,
+    });
     return products;
   }
 
@@ -66,7 +80,9 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findProductsByCategoryId(categoryId: string) {
-    const products = await prisma.product.findMany({ where: { categoryId } });
+    const products = await prisma.product.findMany({
+      where: { categoryId },
+    });
     return products;
   }
 
@@ -77,9 +93,15 @@ export class ProductRepository implements IProductRepository {
     return product;
   }
 
-  async findAllActiveProducts() {
+  async findAllActiveProducts(filters: ProductQueryOptions) {
+    const { sortBy } = filters;
+
+    const whereCondition = generateProductWhereCondition(filters);
+    const sortingCondition = generateProductSortingCondition(sortBy as string);
+
     const products = await prisma.product.findMany({
-      where: { isActive: true },
+      where: whereCondition,
+      orderBy: sortingCondition,
     });
 
     return products;

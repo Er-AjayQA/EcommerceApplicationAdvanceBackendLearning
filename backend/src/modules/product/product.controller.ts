@@ -74,7 +74,7 @@ export const toggleProductStatusController = CatchAsync(
 
 export const getAllProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await productService.getAllProducts();
+    const result = await productService.getAllProducts(req.query);
 
     sendResponse(res, 200, {
       success: true,
@@ -99,7 +99,7 @@ export const getProductsByCategoryController = CatchAsync(
 
 export const getAllActiveProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await productService.getAllActiveProducts();
+    const result = await productService.getAllActiveProducts(req.query);
 
     sendResponse(res, 200, {
       success: true,

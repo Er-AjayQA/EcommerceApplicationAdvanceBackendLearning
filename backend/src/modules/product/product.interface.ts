@@ -1,4 +1,5 @@
 import { Prisma, Product } from "../../generated/prisma/client.js";
+import { ProductQueryOptions } from "../../types/index.js";
 
 export interface IProductRepository {
   createProduct(data: {
@@ -26,12 +27,12 @@ export interface IProductRepository {
     status: boolean,
   ): Promise<Product>;
 
-  findAllProducts(): Promise<Product[] | []>;
+  findAllProducts(filters: ProductQueryOptions): Promise<Product[] | []>;
   findProductById(productId: string): Promise<Product | null>;
   findProductsByCategoryId(categoryId: string): Promise<Product[] | []>;
   findProductByIdAndSellerId(
     productId: string,
     sellerId: string,
   ): Promise<Product | null>;
-  findAllActiveProducts(): Promise<Product[] | []>;
+  findAllActiveProducts(filters: ProductQueryOptions): Promise<Product[] | []>;
 }

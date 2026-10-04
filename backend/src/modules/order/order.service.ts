@@ -29,32 +29,56 @@ export class OrderService {
         throw new AppError("Invalid address", 404);
       }
 
+      const productIds = items.map((item) => item.productId);
+
+      const products = await tx.product.findMany({
+        where: {
+          id: {
+            in: productIds,
+          },
+        },
+      });
+
+      const productMap = new Map(
+        products.map((product) => [product.id, product]),
+      );
+
       let totalPrice = new Prisma.Decimal(0);
       let totalItems = 0;
       const orderItemsData = [];
 
       for (const item of items) {
-        const product = await this.productRepo.findProductById(item.productId);
+        const product = productMap.get(item.productId);
 
         if (!product) {
           throw new AppError("Product not found", 404);
         }
 
         if (!product.isActive) {
-          throw new AppError(`"${product.productName}" is not available`, 404);
+          throw new AppError(`${product.productName} is not available`, 400);
         }
 
-        if (product.stock <= item.quantity) {
+        const updatedStock = await tx.product.updateMany({
+          where: {
+            id: item.productId,
+            stock: {
+              gte: item.quantity,
+            },
+            isActive: true,
+          },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+
+        if (updatedStock.count === 0) {
           throw new AppError(
-            `Insufficient stock for "${product.productName}"`,
-            404,
+            `Insifficient Stock for ${product.productName}`,
+            400,
           );
         }
-
-        await tx.product.update({
-          where: { id: product.id },
-          data: { stock: { decrement: item.quantity } },
-        });
 
         const itemTotal = product.price.mul(item.quantity);
         totalPrice = totalPrice.add(itemTotal);
@@ -76,21 +100,28 @@ export class OrderService {
           items: {
             create: orderItemsData,
           },
-          orderAddress: {
-            create: {
-              addressLine1: existingAddress.addressLine1,
-              addressLine2: existingAddress.addressLine2,
-              city: existingAddress.city,
-              state: existingAddress.state,
-              pincode: existingAddress.pincode,
-              country: existingAddress.country,
-            },
-          },
         },
+        include: { items: true },
+      });
+
+      await tx.orderAddress.create({
+        data: {
+          orderId: order.id,
+          addressLine1: existingAddress.addressLine1,
+          addressLine2: existingAddress.addressLine2,
+          city: existingAddress.city,
+          state: existingAddress.state,
+          pincode: existingAddress.pincode,
+          country: existingAddress.country,
+        },
+      });
+
+      const fullOrder = await tx.order.findUnique({
+        where: { id: order.id },
         include: { items: { include: { product: true } }, orderAddress: true },
       });
 
-      return order;
+      return fullOrder;
     });
   }
 

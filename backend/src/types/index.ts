@@ -30,3 +30,10 @@ export type CartItemWithProduct = Prisma.CartItemsGetPayload<{
     product: true;
   };
 }>;
+
+export type ProductQueryOptions = {
+  categoryId?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sortBy?: string;
+};
