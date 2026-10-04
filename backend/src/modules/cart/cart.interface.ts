@@ -1,16 +1,15 @@
 import { Cart, CartItems } from "../../generated/prisma/client.js";
+import { CartItemWithProduct, CartWithItems } from "../../types/index.js";
+import { addToCartDTO } from "./cart.schema.js";
 
 export interface ICartRepository {
   findCartByUserId(userId: string): Promise<Cart | null>;
-  findCartWithItems(userId: string): Promise<Cart | null>;
+  findCartWithItems(userId: string): Promise<CartWithItems | null>;
+  findCartItem(cartItemId: string): Promise<CartItemWithProduct | null>;
 
   createCart(userId: string): Promise<Cart>;
 
-  addItemsToCart(
-    cartId: string,
-    productId: string,
-    quantity: number,
-  ): Promise<CartItems>;
+  addItemToCart(cartId: string, data: addToCartDTO): Promise<CartItems>;
 
   updateCartItemQuantity(
     cartItemId: string,

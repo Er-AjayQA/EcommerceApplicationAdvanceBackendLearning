@@ -1,10 +1,17 @@
 import { z } from "zod";
 
-export const createCartSchema = z
+export const addToCartSchema = z
   .object({
     productId: z.string(),
-    quantity: z.number().min(1, "Minimum quantity should be atleast 1"),
+    quantity: z.int().min(1, "Minimum quantity should be atleast 1"),
   })
   .strict();
 
-export type createCartDTO = z.infer<typeof createCartSchema>;
+export const updateCartItemSchema = z
+  .object({
+    quantity: z.int().min(1, "Minimum quantity should be atleast 1"),
+  })
+  .strict();
+
+export type addToCartDTO = z.infer<typeof addToCartSchema>;
+export type updateCartItemDTO = z.infer<typeof updateCartItemSchema>;

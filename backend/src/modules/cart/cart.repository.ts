@@ -1,12 +1,13 @@
-import { Cart, CartItems } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { ICartRepository } from "./cart.interface.js";
+import { addToCartDTO } from "./cart.schema.js";
 
 export class CartRepository implements ICartRepository {
   async findCartByUserId(userId: string) {
     const userCart = await prisma.cart.findUnique({
       where: { userId },
     });
+
     return userCart;
   }
 
@@ -18,12 +19,23 @@ export class CartRepository implements ICartRepository {
     return userCart;
   }
 
+  async findCartItem(cartItemId: string) {
+    const cartItemWithProduct = await prisma.cartItems.findUnique({
+      where: { id: cartItemId },
+      include: { product: true },
+    });
+
+    return cartItemWithProduct;
+  }
+
   async createCart(userId: string) {
     const cart = await prisma.cart.create({ data: { userId } });
     return cart;
   }
 
-  async addItemsToCart(cartId: string, productId: string, quantity: number) {
+  async addItemToCart(cartId: string, data: addToCartDTO) {
+    const { productId, quantity } = data;
+
     const existingItem = await prisma.cartItems.findUnique({
       where: { cartId_productId: { cartId, productId } },
     });
@@ -39,7 +51,7 @@ export class CartRepository implements ICartRepository {
       });
     }
 
-    return prisma.cartItems.create({
+    return await prisma.cartItems.create({
       data: {
         cartId,
         productId,

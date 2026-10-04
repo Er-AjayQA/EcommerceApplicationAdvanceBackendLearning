@@ -1,3 +1,4 @@
+import { Prisma } from "../generated/prisma/client.js";
 import { Role } from "../generated/prisma/enums.js";
 
 export type ApiResponse<T> = {
@@ -13,3 +14,19 @@ export interface IJwtPayload {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type CartWithItems = Prisma.CartGetPayload<{
+  include: {
+    items: {
+      include: {
+        product: true;
+      };
+    };
+  };
+}>;
+
+export type CartItemWithProduct = Prisma.CartItemsGetPayload<{
+  include: {
+    product: true;
+  };
+}>;
