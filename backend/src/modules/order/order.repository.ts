@@ -15,6 +15,7 @@ export class OrderRepository implements IOrderRepository {
     const orders = await prisma.order.findMany({
       where: { userId },
       include: { items: { include: { product: true } }, orderAddress: true },
+      orderBy: { createdAt: "desc" },
     });
     return orders;
   }

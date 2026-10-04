@@ -27,12 +27,20 @@ export interface IProductRepository {
     status: boolean,
   ): Promise<Product>;
 
-  findAllProducts(filters: ProductQueryOptions): Promise<Product[] | []>;
+  findAllProducts(filters: ProductQueryOptions): Promise<{
+    products: Product[];
+    nextCursor: string | null;
+    hasMore: boolean;
+  }>;
   findProductById(productId: string): Promise<Product | null>;
   findProductsByCategoryId(categoryId: string): Promise<Product[] | []>;
   findProductByIdAndSellerId(
     productId: string,
     sellerId: string,
   ): Promise<Product | null>;
-  findAllActiveProducts(filters: ProductQueryOptions): Promise<Product[] | []>;
+  findAllActiveProducts(filters: ProductQueryOptions): Promise<{
+    products: Product[];
+    nextCursor: string | null;
+    hasMore: boolean;
+  }>;
 }

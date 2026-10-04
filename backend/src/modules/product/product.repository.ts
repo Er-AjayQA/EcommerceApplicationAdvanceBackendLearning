@@ -1,12 +1,7 @@
-import { gte } from "zod";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { ProductQueryOptions } from "../../types/index.js";
 import { IProductRepository } from "./product.interface.js";
-import {
-  generateProductSortingCondition,
-  generateProductWhereCondition,
-} from "./product.helper.js";
 
 export class ProductRepository implements IProductRepository {
   async createProduct(data: {
@@ -60,16 +55,77 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findAllProducts(filters: ProductQueryOptions) {
-    const { sortBy } = filters;
+    const {
+      categoryId,
+      minPrice,
+      maxPrice,
+      sortBy,
+      limit = 10,
+      cursor,
+    } = filters;
 
-    const whereCondition = generateProductWhereCondition(filters);
-    const sortingCondition = generateProductSortingCondition(sortBy as string);
+    // Filter Logic
+    const where: Prisma.ProductWhereInput = {};
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (minPrice || maxPrice) {
+      where.price = {};
+
+      if (minPrice) {
+        where.price.gte = new Prisma.Decimal(minPrice);
+      }
+
+      if (maxPrice) {
+        where.price.lte = new Prisma.Decimal(maxPrice);
+      }
+    }
+
+    if (cursor) {
+      where.createdAt = {
+        lt: new Date(cursor),
+      };
+    }
+
+    // Sorting Logic
+    let orderBy: Prisma.ProductOrderByWithRelationInput = {
+      createdAt: "desc",
+    };
+
+    switch (sortBy) {
+      case "latest":
+        orderBy = { createdAt: "desc" };
+        break;
+
+      case "oldest":
+        orderBy = { createdAt: "asc" };
+        break;
+
+      case "priceAsc":
+        orderBy = { price: "asc" };
+        break;
+
+      case "priceDesc":
+        orderBy = { price: "desc" };
+        break;
+    }
 
     const products = await prisma.product.findMany({
-      where: whereCondition,
-      orderBy: sortingCondition,
+      where,
+      orderBy,
+      take: limit + 1,
     });
-    return products;
+
+    let nextCursor: string | null = null;
+
+    if (products.length > limit) {
+      const nextItem = products.pop();
+      nextCursor = nextItem?.createdAt.toISOString() || null;
+    }
+
+    return { products, nextCursor, hasMore: !!nextCursor };
   }
 
   async findProductById(productId: string) {
@@ -94,16 +150,74 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findAllActiveProducts(filters: ProductQueryOptions) {
-    const { sortBy } = filters;
+    const {
+      categoryId,
+      minPrice,
+      maxPrice,
+      sortBy,
+      limit = 10,
+      cursor,
+    } = filters;
 
-    const whereCondition = generateProductWhereCondition(filters);
-    const sortingCondition = generateProductSortingCondition(sortBy as string);
+    // Filters Logic
+    const where: Prisma.ProductWhereInput = { isActive: true };
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (minPrice || maxPrice) {
+      where.price = {};
+
+      if (minPrice) {
+        where.price.gte = new Prisma.Decimal(minPrice);
+      }
+
+      if (maxPrice) {
+        where.price.lte = new Prisma.Decimal(maxPrice);
+      }
+    }
+
+    if (cursor) {
+      where.createdAt = { lt: new Date(cursor) };
+    }
+
+    // Sorting Logic
+    let orderBy: Prisma.ProductOrderByWithRelationInput = {
+      createdAt: "desc",
+    };
+
+    switch (sortBy) {
+      case "latest":
+        orderBy = { createdAt: "desc" };
+        break;
+
+      case "oldest":
+        orderBy = { createdAt: "asc" };
+        break;
+
+      case "priceAsc":
+        orderBy = { price: "asc" };
+        break;
+
+      case "priceDesc":
+        orderBy = { price: "desc" };
+        break;
+    }
 
     const products = await prisma.product.findMany({
-      where: whereCondition,
-      orderBy: sortingCondition,
+      where,
+      orderBy,
+      take: limit + 1,
     });
 
-    return products;
+    let nextCursor: string | null = null;
+
+    if (products.length > limit) {
+      const nextItem = products.pop();
+      nextCursor = nextItem?.createdAt.toISOString() || null;
+    }
+
+    return { products, nextCursor, hasMore: !!nextCursor };
   }
 }

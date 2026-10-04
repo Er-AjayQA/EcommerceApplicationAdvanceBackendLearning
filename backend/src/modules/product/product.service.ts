@@ -180,8 +180,10 @@ export class ProductService {
   }
 
   async getAllProducts(filters: ProductQueryOptions) {
-    const products = await this.productRepo.findAllProducts(filters);
-    return toProductsListResponse(products);
+    const { products, nextCursor, hasMore } =
+      await this.productRepo.findAllProducts(filters);
+
+    return { products: toProductsListResponse(products), nextCursor, hasMore };
   }
 
   async getProductsByCategoryId(categoryId: string) {
@@ -191,8 +193,9 @@ export class ProductService {
   }
 
   async getAllActiveProducts(filters: ProductQueryOptions) {
-    const activeProducts =
+    const { products, nextCursor, hasMore } =
       await this.productRepo.findAllActiveProducts(filters);
-    return toProductsListResponse(activeProducts);
+
+    return { products: toProductsListResponse(products), nextCursor, hasMore };
   }
 }

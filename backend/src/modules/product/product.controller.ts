@@ -74,7 +74,17 @@ export const toggleProductStatusController = CatchAsync(
 
 export const getAllProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await productService.getAllProducts(req.query);
+    const filters = {
+      categoryId: req.query.categoryId as string,
+      minPrice: req.query.minPrice as string,
+      maxPrice: req.query.maxPrice as string,
+      sortBy: req.query.query as "latest" | "oldest" | "priceAsc" | "priceDesc",
+
+      limit: req.query.limit ? Number(req.query.limit) : 3,
+      cursor: req.query.cursor as string,
+    };
+
+    const result = await productService.getAllProducts(filters);
 
     sendResponse(res, 200, {
       success: true,
@@ -99,7 +109,17 @@ export const getProductsByCategoryController = CatchAsync(
 
 export const getAllActiveProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await productService.getAllActiveProducts(req.query);
+    const filters = {
+      categoryId: req.query.categoryId as string,
+      minPrice: req.query.minPrice as string,
+      maxPrice: req.query.maxPrice as string,
+      sortBy: req.query.query as "latest" | "oldest" | "priceAsc" | "priceDesc",
+
+      limit: req.query.limit ? Number(req.query.limit) : 10,
+      cursor: req.query.cursor as string,
+    };
+
+    const result = await productService.getAllActiveProducts(filters);
 
     sendResponse(res, 200, {
       success: true,

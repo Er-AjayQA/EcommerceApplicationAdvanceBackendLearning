@@ -2,14 +2,12 @@ import { OrderStatus, Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
 import { IAddressRepository } from "../address/address.interface.js";
-import { IProductRepository } from "../product/product.interface.js";
 import { IOrderRepository } from "./order.interface.js";
 import { createOrderDTO, updateOrderStatusDTO } from "./order.schema.js";
 
 export class OrderService {
   constructor(
     private orderRepo: IOrderRepository,
-    private productRepo: IProductRepository,
     private addressRepo: IAddressRepository,
   ) {}
 
