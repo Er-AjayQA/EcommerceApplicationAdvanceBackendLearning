@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  verifyAdmin,
-  verifySeller,
-  verifyUser,
-} from "../../middlewares/auth.middleware.js";
+import { verifySeller, verifyUser } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import { createProductSchema, updateProductSchema } from "./product.schema.js";
 import {
@@ -16,6 +12,7 @@ import {
   updateProductController,
 } from "./product.controller.js";
 import { upload } from "../../middlewares/multer.middleware.js";
+import { productLimiter } from "../../middlewares/reateLimit.middleware.js";
 const router = express.Router();
 
 router
@@ -31,6 +28,7 @@ router
 router
   .route("/update/:id")
   .patch(
+    productLimiter,
     verifyUser,
     verifySeller,
     upload.array("images"),

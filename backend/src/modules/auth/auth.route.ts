@@ -15,20 +15,26 @@ import {
   refreshTokenController,
 } from "./auth.controller.js";
 import { verifyUser } from "../../middlewares/auth.middleware.js";
+import { authLimiter } from "../../middlewares/reateLimit.middleware.js";
 const router = express.Router();
 
 router
   .route("/register")
-  .post(validate(registerUseSchema), registerUserController);
+  .post(authLimiter, validate(registerUseSchema), registerUserController);
 
-router.route("/login").post(validate(loginUserSchema), loginController);
+router
+  .route("/login")
+  .post(authLimiter, validate(loginUserSchema), loginController);
+
 router.route("/me").get(verifyUser, getLoggedInUserController);
 router.route("/logout").post(verifyUser, logoutController);
+
 router
   .route("/logout-all-devices")
   .post(verifyUser, validate(logoutUserSchema), logoutAllDevicesController);
+
 router
   .route("/refresh-token")
-  .post(verifyUser, validate(refreshTokenSchema), refreshTokenController);
+  .post(authLimiter, validate(refreshTokenSchema), refreshTokenController);
 
 export default router;

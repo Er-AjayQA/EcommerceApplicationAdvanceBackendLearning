@@ -3,9 +3,14 @@ import cors from "cors";
 import { FRONTEND_URL } from "./config/env.config.js";
 import cookieParser from "cookie-parser";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
+import { globalLimiter } from "./middlewares/reateLimit.middleware.js";
 
 export const app = express();
 
+// Only in production if Using NGINX, AWS or etc
+// app.set("trus proxy", 1);
+
+app.use(globalLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
